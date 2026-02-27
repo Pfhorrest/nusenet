@@ -77,6 +77,18 @@ The object of a rating is intentionally general. The obvious case is a post, but
 
 This generality means the trust graph is richer than a simple post-rating system. Downvoting a tag associated with a harassment campaign, for instance, doesn't just hide posts with that tag — it pushes the people who use it toward the negative-affinity end of your graph, which in turn de-weights their ratings of everything else.
 
+Importantly, affinity for tags accrues implicitly just as it does for authors. If you (or people with positive affinity to you) consistently downrate posts that carry a particular tag, that tag accumulates negative affinity in your view automatically — you don't need to explicitly rate the tag itself. If a cluster of authors you already distrust migrates from one toxic topic to a new one under a fresh tag, the new tag inherits their negative affinity without you having to take any action. The trust graph learns the shape of communities, not just individuals.
+
+### Filters Are a Default, Not a Lock
+
+Visibility thresholds and affinity-based filtering are defaults applied to your general feed — they are not censorship of your own access. Content below your threshold remains directly accessible:
+
+- Following a link or parent-post reference to a low-rated item will always retrieve it.
+- Explicitly searching for posts by a downrated author, or tagged with a downrated tag, bypasses your filters and shows results directly.
+- There is no mechanism that prevents you from reading content you have chosen to deprioritize — only from having it surface unsolicited.
+
+This matters for practical reasons: a highly-rated post in your feed may be a rebuttal of something your filters would normally hide; you can follow the parent link to read what is being rebutted. A researcher investigating a toxic community can search explicitly for posts under a tag their filters would otherwise suppress. The system models your preferences, not your permissions.
+
 ---
 
 ## Architecture: Separable Layers
