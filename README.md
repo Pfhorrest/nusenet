@@ -1,2 +1,192 @@
 # nusenet
-A decentralized discussion platform with user-sovereign curation
+
+*A decentralized discussion platform with user-sovereign curation*
+
+The name combines "new" with "Usenet" and is pronounced "news net" — evoking both the platform that inspired it and what it aspires to become.
+
+---
+
+## Why This Exists
+
+The early internet was a **pull medium**. You decided what to look for, and you went and found it. This was sometimes hard — you had to already know something existed before you could find it — but the tools kept improving. Hyperlinks, webrings, indices, and then proper search engines made it progressively easier to discover content without already knowing exactly where it lived. The user was in control.
+
+Platforms like **Usenet** embodied this ethos at the infrastructure level: posts were distributed across many independent servers with no central host, and every server held a copy of everything, so no single entity could control what existed. Individual users managed their own experience with *killfiles* — personal blocklists that filtered out authors or topics they didn't want to see. It was crude, but the principle was right: distribution was the network's job, and curation was the user's job. Usenet wasn't designed to scale to a billion users, and it showed — but its instincts about where control should live were sound.
+
+In 1996, a company called **PointCast** launched a product that turned idle PC screens into news tickers by pushing content directly to users' desktops without them asking for it. It was a sensation, and it triggered a wave of investment and imitation. Microsoft built "Active Desktop," Netscape built "Netcaster," and a cluster of startups including Marimba, BackWeb, and others competed to establish **push technology** as the next paradigm of the internet. The pitch was seductive: instead of the tiring, effortful experience of browsing the web, content would simply arrive. The analogy invoked, approvingly, was television.
+
+People who remembered what television was — a medium where a small number of broadcasters decided what hundreds of millions of people would see — were not enthused. The backlash was pointed. By the late 1990s, "push" as a branded concept had quietly collapsed; PointCast, which had turned down a $450 million acquisition offer at its peak, was eventually sold for a few million dollars. RSS emerged as a lightweight, user-controlled alternative to push channels, and the movement was declared dead.
+
+Except it wasn't dead. It just stopped announcing itself. By the 2000s and 2010s, push had won — it just called itself **the algorithm** instead. Some central authority — a corporation, a government, a platform's moderation team, or increasingly an opaque machine learning system — decides what you should see and delivers it to you. You did not choose this curator. You cannot inspect their criteria. You cannot override their decisions except by leaving the platform entirely.
+
+Meanwhile, the few remaining pull-oriented spaces on the internet are either drowning in spam and abuse (because centralized moderation has been removed without replacement) or have quietly recentralized moderation around a small number of powerful community members who are, again, not chosen by you and not accountable to you.
+
+**Nusenet is an attempt to recover what was lost, at the scale and ease of the modern internet.**
+
+The goal is a discussion platform where content curation is entirely in the hands of each individual user — not their platform provider, not their government, not the most powerful members of their community — while still being usable by ordinary people who don't want to spend hours manually configuring filters.
+
+The insight at the center of nusenet is that you don't need a central authority to have effective curation. You just need to be able to borrow the judgment of people you trust, automatically, transitively, and under your own control. Think of it as Usenet's distributed hosting and personal killfiles — updated, generalized, and scaled to the modern internet.
+
+---
+
+## The Core Idea: A Trust Graph as Curation Engine
+
+Every user maintains a local record of how they have rated content: posts, links, articles, media — anything with an addressable identifier. These ratings are multidimensional (see below) and are published as a public record, though individual ratings may be marked private by their author.
+
+When you rate a piece of content, you are also implicitly rating its **author**. A user whose posts you have consistently rated positively has high **affinity** with you. A user whose posts you have consistently rated negatively has negative affinity with you.
+
+These affinities propagate:
+
+- Content rated highly by **high-affinity users** appears with a higher default score in your view.
+- Content rated highly by **low-affinity users** (people you distrust) appears with a lower default score.
+- The enemy-of-my-enemy principle applies: content rated highly by someone who is themselves disliked by someone you dislike gets a modest positive boost.
+- This propagation continues transitively — through friends of friends, and so on — lazily, fetching more distant ratings as bandwidth and compute allow.
+
+Each step further from you in the graph is weighted by a **decay factor** that you control. At one extreme (decay = 1), everyone's ratings weigh as much as your own, regardless of how distant the connection. At the other extreme (decay = 0), only your own explicit ratings have any weight. Most users will live somewhere in between — probably around 0.5, meaning each additional hop in the trust graph halves the influence of those ratings on your view.
+
+You also control a **visibility threshold**: content whose aggregate weighted score falls below this threshold is dropped from your view entirely. The default is 0, meaning only net-positive content is shown, but users who want to see critical or controversial material can lower this.
+
+Your own explicit ratings always carry more weight than any imported rating, regardless of affinity. The trust graph provides defaults; you always have the final word.
+
+This is sometimes described informally as **"choose your own mod team"** — except the team you're choosing isn't moderating anyone else's view, only yours.
+
+### Multidimensional Ratings
+
+Inspired by Slashdot's moderation categories, ratings in nusenet are not a single number but a set of independent dimensions. The core proposed dimensions correspond to four fundamental questions you might ask about any piece of content:
+
+| Dimension | Positive | Negative |
+|-----------|----------|----------|
+| **True** | Accurate, well-evidenced | Inaccurate, misleading |
+| **Good** | Worthwhile, enjoyable | Unpleasant, harmful |
+| **Important** | Significant, deserving attention | Trivial, not worth the time |
+| **New** | Original, novel | Derivative, redundant |
+
+The practical point is that different users can weight these dimensions differently. Someone who wants only accurate information and can tolerate unpleasant content sets a high threshold on *True* and a low one on *Good*. Someone who wants a pleasant reading experience and trusts their network to pre-filter for accuracy inverts those thresholds. A topic that is old and obscure but genuinely significant can score high on *Important* without scoring high on *New*; a viral shitpost scores the reverse.
+
+The system supports **arbitrary rating dimensions** beyond this core vocabulary, so communities can define domain-specific axes (e.g., *Funny*, *Technically Sound*, *Legally Significant*) that participants in those communities can use and weight.
+
+Decay and visibility threshold are configurable **per dimension**, not just globally.
+
+### What Can Be Rated
+
+The object of a rating is intentionally general. The obvious case is a post, but the rating schema is designed to accommodate:
+
+- **Posts and content items** — the primary case, identified by CID, URL, or platform-specific ID
+- **Tags** — rating a tag up or down lets you boost or suppress entire topics in your feed, and generates affinity signals for authors who use those tags heavily. Someone who posts prolifically under a tag you've downvoted will accumulate negative affinity with you accordingly.
+- **Users directly** — explicit positive or negative ratings of a user by public key, independent of any specific post, for cases where your opinion of someone is clear enough to state outright
+- **Anything else with a stable identifier** — the schema leaves this open
+
+This generality means the trust graph is richer than a simple post-rating system. Downvoting a tag associated with a harassment campaign, for instance, doesn't just hide posts with that tag — it pushes the people who use it toward the negative-affinity end of your graph, which in turn de-weights their ratings of everything else.
+
+---
+
+## Architecture: Separable Layers
+
+Nusenet is designed as a stack of independent layers, each of which can in principle be swapped out for alternatives. This is deliberate: the project's ideas should be able to interoperate with other decentralized systems, not compete with them.
+
+### Layer 1: Ratings
+
+A rating record is a minimal structure:
+
+```
+{
+  rater:     <user identifier>,
+  item:      <content identifier>,
+  dimension: <rating dimension>,
+  value:     <positive, negative, or neutral>,
+  timestamp: <unix timestamp>,
+  public:    <boolean>,
+  signature: <cryptographic signature>
+}
+```
+
+Ratings marked `public: false` are stored locally and influence the owner's graph traversal (they affect which external rating records are fetched and how they are weighted) but are never transmitted to other peers. This allows users to rate sensitive content — political, personal, adult — in a way that shapes their own view without disclosing what they have been looking at.
+
+The rating layer is **platform-agnostic**. Item identifiers can be anything: a URL, a content hash, a magnet link, a post ID on another platform. This means the nusenet trust graph can in principle be applied as a curation layer on top of existing platforms — a browser extension that applies nusenet ratings to content on other sites is a natural early application. Within the Bluesky ecosystem specifically, AT Protocol's "feed generator" feature allows third-party algorithms to rank and filter content; a nusenet trust graph exposed as a feed generator would let Bluesky users benefit from personal trust-graph curation without leaving the platform.
+
+### Layer 2: Content Metadata
+
+The atomic unit of a nusenet post is a small **metadata file** with a standardized schema, containing at minimum:
+
+- **Author**: identifier of the post's author
+- **Subject**: human-readable title
+- **Parent**: identifier of the post this is replying to, if any
+- **Tags**: a set of freeform tags for non-hierarchical categorization (replacing Usenet's rigid group hierarchy)
+- **Content reference**: either inline content (for short text) or a reference to where the full content can be retrieved
+- **Timestamp** and **signature**
+
+The content reference can point to an off-platform URL (making the post function as a link aggregator entry, like early Reddit or Slashdot) or to content hosted within the platform itself.
+
+### Layer 3: Identity
+
+Users are identified by a stable, verifiable identifier that can be used to sign ratings and posts. The simplest and most self-sovereign option is a **cryptographic keypair**: your public key is your identity, your private key signs your content, and there is no registration, no username database, no central authority that can revoke your identity.
+
+Other identity mechanisms are possible and may be preferable in some deployments. AT Protocol (Bluesky's underlying protocol) provides a decentralized identity layer based on DIDs (Decentralized Identifiers) that could serve the same function while also enabling tighter integration with the Bluesky ecosystem. Other DID-based systems, or even federated identity providers, could plug into the same slot. The core requirement is that an identifier be stable and verifiable. Decentralization is strongly preferred for the long-term philosophy of the system, but it is not a hard technical requirement: platform-issued identifiers (including OAuth/SSO providers like Google, Apple, or GitHub) could in principle serve as user IDs, which might ease integration with existing platforms during early adoption even if they introduce a degree of central dependency that a mature deployment would want to avoid.
+
+The primary adversarial threat to a trust-graph system is the **Sybil attack**: a bad actor generating many fake identities to flood the graph with coordinated ratings. Nusenet's natural defense is that fake accounts have no ratings power until real users develop positive affinity toward their posts — which requires actually producing content that real humans find valuable. Coordinated inauthentic behavior remains a risk but is bounded: a coordinated cluster cannot propagate its influence far into the broader graph without genuine cross-community endorsement, which the decay factor naturally limits.
+
+### Layer 4: Content Hosting and Distribution
+
+
+This layer is **deliberately hosting-agnostic**. The metadata file (Layer 2) contains a content reference field that can point to content hosted anywhere. Different posts on the same network may be hosted in entirely different ways, and the rating and discovery layers above don't care.
+
+#### IPFS (preferred for native nusenet content)
+
+**IPFS** is the preferred hosting backend for nusenet's own content. Its central feature is *content addressing*: every file is identified by a cryptographic hash of its contents (a CID, or Content Identifier), not by where it is stored. This means:
+
+- The same content always has the same identifier regardless of who is hosting it, solving canonicalization for cross-posts and reposts.
+- Content is tamper-evident by construction — any modification changes the CID.
+- Content is retrievable from any peer who has it, with no central server.
+- Link rot is replaced by a softer failure mode: content becomes unavailable only when *nobody* is hosting it, not when a single server goes down.
+
+Short text content (including the metadata file itself) can be stored directly as IPFS objects. Larger media — audio, video, high-resolution images — can also be stored on IPFS, which handles content of any size uniformly through its block-splitting architecture.
+
+Users who want to ensure their content remains available can **pin** it to a local IPFS node or to one of several public or paid pinning services, without any involvement from a nusenet-specific infrastructure provider.
+
+#### BitTorrent (supplementary, or as a wholesale alternative)
+
+**BitTorrent** is well-suited as a supplementary transport for large media files. A metadata file hosted on IPFS can include a magnet link in its content reference field, directing clients to retrieve a large video or audio file via BitTorrent instead. BitTorrent's parallel-swarm download architecture is exceptionally efficient for large files at high demand, and it remains the most battle-tested decentralized file distribution protocol in existence.
+
+For deployments that prefer not to use IPFS at all, BitTorrent can serve as a wholesale alternative hosting layer. In this configuration, content discovery requires an additional mechanism since BitTorrent has no native cross-torrent content addressing. The natural solution is the **gossip protocol** described below: your client periodically requests lists of known post magnet links from positive-affinity peers, who have compiled their lists from their own positive-affinity peers, and so on. This makes content discovery and social trust the same network operation — you find new content through the same relationships that filter it.
+
+#### Conventional HTTP hosting
+
+Nothing prevents a nusenet metadata file from pointing to content on an ordinary web server. This is obviously less resilient than IPFS or BitTorrent (a single server can go down or be pressured to remove content), but it is fully functional and may be appropriate for some use cases — for instance, a publisher who controls their own server and wants to participate in the nusenet rating graph without migrating their content.
+
+#### Overlaying nusenet on existing social platforms
+
+The most important consequence of hosting-agnosticism is that nusenet does not require anyone to abandon their existing online presence to participate.
+
+Platforms like **Mastodon** (built on ActivityPub) and **Bluesky** (built on AT Protocol) expose open APIs designed for third-party clients. A nusenet client could read your feeds from these platforms, apply your personal trust graph as the ranking layer *instead of each platform's own algorithm*, and present a unified view across all of them. Multi-platform social clients already exist; what nusenet adds is a curation layer that is yours rather than the platform's.
+
+Cross-posting works in the reverse direction: when you publish a native nusenet post, your client can simultaneously post to Mastodon, Bluesky, or other connected platforms, spreading your content to audiences who haven't yet adopted nusenet.
+
+Posts on traditional platforms lack nusenet's native author identity metadata. This can be bridged with a simple convention: include your nusenet public key in the body of a post on a traditional platform — something like `[nusenet:npub1abc123...]` — and nusenet clients can parse it. This is an established pattern; PGP signatures were distributed the same way before email clients natively supported them. A post with an embedded nusenet key becomes a node in the trust graph: it can be rated, those ratings contribute to the author's affinity scores, and the author's own published ratings apply to content they've rated. The nusenet graph grows quietly underneath existing platforms, requiring no migration.
+
+This suggests a realistic adoption path: nusenet begins as a curation and identity layer grafted onto platforms people already use, demonstrating value before asking anyone to change their habits. Native nusenet hosting (via IPFS or BitTorrent) becomes appealing over time as the network effects of the trust graph make it worth participating more fully.
+
+**Rather than build every component from scratch, nusenet should seek to collaborate with and build on existing projects wherever possible.** Established multi-platform clients (Ivory, Mona, and others in the Mastodon ecosystem; clients being built on AT Protocol for Bluesky) are natural integration partners. IPFS and its tooling ecosystem are existing infrastructure, not something nusenet needs to reinvent. The novel contribution of this project is the trust graph protocol and the rating schema — the goal is to define those well and let them compose with whatever hosting and client infrastructure already exists.
+
+---
+
+## What This Is Not
+
+- **Not a moderation system.** Nusenet does not remove or suppress content globally. Content that is invisible to you may be perfectly visible to someone else. The platform has no global moderators and no central content policy.
+- **Not anonymous.** Posts and ratings are signed with keypairs. Pseudonymity is possible (your keypair need not be linked to your real identity), but the system does not provide anonymity guarantees. Users who need strong anonymity should route through appropriate tools independently.
+- **Not finished.** This document is a design proposal and invitation to collaborate, not a specification of a working system.
+
+---
+
+## Current Status and How to Get Involved
+
+Nusenet is currently in the **design and specification phase**. No production code exists yet.
+
+The immediate priorities are:
+
+1. Formalizing the ratings protocol and data schema
+2. Defining the metadata file format
+3. Prototyping the trust graph traversal algorithm
+4. Identifying existing projects — multi-platform social clients, IPFS tooling, AT Protocol developers — to collaborate with rather than duplicate
+
+If any of this resonates with you — whether you're interested in the philosophy, the cryptography, the distributed systems engineering, the client UX, or just want to argue about the design — contributions and discussion are welcome.
+
+Contact Forrest Cameranesi at forrest@cameranesi.com.
