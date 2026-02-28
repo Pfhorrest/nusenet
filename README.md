@@ -180,7 +180,34 @@ This suggests a realistic adoption path: nusenet begins as a curation and identi
 
 ---
 
-## What This Is Not
+## Client Implementation Recommendations
+
+The following are not protocol requirements but represent good practice for nusenet client software.
+
+### The Endorsed Content List
+
+Every user's set of positively-rated post identifiers — regardless of where those posts are hosted — functions as a **unified discovery feed**. Whether an identifier in that list is an IPFS CID, a BitTorrent magnet link, or a URL to a post on Mastodon or Bluesky, peers pull from it the same way. This means the pinning behavior and the gossip discovery protocol are the same mechanism viewed from two angles: pinning is what you do locally with content you endorse, and sharing your list of endorsed identifiers is how peers discover new content. One list serves both purposes across all hosting backends simultaneously.
+
+In an IPFS deployment, clients should consider automatically **pinning** content from this list — keeping a local copy and contributing to its availability on the network:
+
+- **Metadata files** for all positively-rated posts should always be pinned locally — they are small and their availability is important for graph traversal.
+- **Full content payloads** (especially large media files) might only be pinned above a higher rating threshold, or only for content below a configurable file size limit, to avoid undue storage consumption.
+- If the user subscribes to a remote pinning service, highly-rated content can be pinned there too, ensuring availability when the local machine is offline. Which pinning service to use, and at what threshold, should be **user-configured** — the client should not choose a remote service on the user's behalf.
+
+Conversely, content that has been retrieved and processed but rated negatively can be **unpinned and garbage-collected** after a grace period. The user has contributed to the network by retrieving it; they are not obligated to continue hosting it.
+
+### Cached Rating Distribution
+
+Proximal peers should serve not only their own rating records but also **cached copies of rating records** they have retrieved from their own proximal peers. This means that when your client fetches ratings from a directly-connected peer, it receives an immediate approximation of the broader graph — ratings from peers-of-peers and beyond — without having to crawl outward hop by hop before anything is useful.
+
+Your client then operates in two modes simultaneously:
+
+- **Fast approximate mode**: cached ratings from proximal peers are available immediately on startup and provide a useful working approximation of the full graph.
+- **Slow precise mode**: your client lazily reaches out directly to more distal peers to verify whether the cached versions it received are current, updating its local view as fresher data arrives.
+
+This lazy verification step also provides a natural integrity check. A proximal peer cannot silently manipulate what you see from people further out without the manipulation being detectable as soon as your client makes direct contact with those further peers and finds a discrepancy. Since all rating records are cryptographically signed by their original authors, any tampering is immediately evident. And any peer caught serving falsified or selectively withheld cached ratings loses affinity with you as a consequence — reducing their influence over your view going forward. The incentive structure discourages manipulation without requiring a separate enforcement mechanism.
+
+
 
 - **Not a moderation system.** Nusenet does not remove or suppress content globally. Content that is invisible to you may be perfectly visible to someone else. The platform has no global moderators and no central content policy.
 - **Not anonymous.** Posts and ratings are signed with keypairs. Pseudonymity is possible (your keypair need not be linked to your real identity), but the system does not provide anonymity guarantees. Users who need strong anonymity should route through appropriate tools independently.
@@ -201,4 +228,4 @@ The immediate priorities are:
 
 If any of this resonates with you — whether you're interested in the philosophy, the cryptography, the distributed systems engineering, the client UX, or just want to argue about the design — contributions and discussion are welcome.
 
-Contact Forrest Cameranesi at forrest@cameranesi.com.
+To get in touch, contact **Forrest Cameranesi** at [forrest@cameranesi.com](mailto:forrest@cameranesi.com).
