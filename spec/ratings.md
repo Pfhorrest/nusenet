@@ -1,4 +1,4 @@
-# neusnet Protocol Specification
+# neusnet Specification Layer 1: Rating Protocol
 
 *Working draft — design phase*
 
