@@ -1,8 +1,8 @@
-# nusenet Protocol Specification
+# neusnet Protocol Specification
 
 *Working draft — design phase*
 
-This document specifies the nusenet ratings and trust graph protocol in enough detail to guide implementation and invite critique. It is a companion to [README.md](README.md), which provides motivation and architectural overview. Where the README describes *what* and *why*, this document describes *how*.
+This document specifies the neusnet ratings and trust graph protocol in enough detail to guide implementation and invite critique. It is a companion to [README.md](README.md), which provides motivation and architectural overview. Where the README describes *what* and *why*, this document describes *how*.
 
 This specification covers Layer 1 (Ratings) and the trust graph algorithm that operates on it. Specifications for Layer 2 (Content Metadata), Layer 3 (Identity), and Layer 4 (Content Hosting) will follow in subsequent documents as those designs are finalized.
 
@@ -12,7 +12,7 @@ This specification covers Layer 1 (Ratings) and the trust graph algorithm that o
 
 ### 1.1 Nodes and Edges
 
-The nusenet trust graph contains three kinds of **nodes**:
+The neusnet trust graph contains three kinds of **nodes**:
 
 - **Users** — identified by a stable user identifier (see Layer 3 spec)
 - **Posts** — identified by a content identifier (URL, IPFS CID, magnet link, platform-specific ID, etc.)

@@ -1,4 +1,4 @@
-# nusenet
+# neusnet
 
 *A decentralized discussion platform with user-sovereign curation*
 
@@ -20,11 +20,11 @@ Except it wasn't dead. It just stopped announcing itself. By the 2000s and 2010s
 
 Meanwhile, the few remaining pull-oriented spaces on the internet are either drowning in spam and abuse (because centralized moderation has been removed without replacement) or have quietly recentralized moderation around a small number of powerful community members who are, again, not chosen by you and not accountable to you.
 
-**Nusenet is an attempt to recover what was lost, at the scale and ease of the modern internet.**
+**neusnet is an attempt to recover what was lost, at the scale and ease of the modern internet.**
 
 The goal is a discussion platform where content curation is entirely in the hands of each individual user — not their platform provider, not their government, not the most powerful members of their community — while still being usable by ordinary people who don't want to spend hours manually configuring filters.
 
-The insight at the center of nusenet is that you don't need a central authority to have effective curation. You just need to be able to borrow the judgment of people you trust, automatically, transitively, and under your own control. Think of it as Usenet's distributed hosting and personal killfiles — updated, generalized, and scaled to the modern internet.
+The insight at the center of neusnet is that you don't need a central authority to have effective curation. You just need to be able to borrow the judgment of people you trust, automatically, transitively, and under your own control. Think of it as Usenet's distributed hosting and personal killfiles — updated, generalized, and scaled to the modern internet.
 
 ---
 
@@ -51,7 +51,7 @@ This is sometimes described informally as **"choose your own mod team"** — exc
 
 ### Multidimensional Ratings
 
-Inspired by Slashdot's moderation categories, ratings in nusenet are not a single number but a set of independent dimensions. The core proposed dimensions correspond to four fundamental questions you might ask about any piece of content:
+Inspired by Slashdot's moderation categories, ratings in neusnet are not a single number but a set of independent dimensions. The core proposed dimensions correspond to four fundamental questions you might ask about any piece of content:
 
 | Dimension | Positive | Negative |
 |-----------|----------|----------|
@@ -93,7 +93,7 @@ This matters for practical reasons: a highly-rated post in your feed may be a re
 
 ## Architecture: Separable Layers
 
-Nusenet is designed as a stack of independent layers, each of which can in principle be swapped out for alternatives. This is deliberate: the project's ideas should be able to interoperate with other decentralized systems, not compete with them.
+neusnet is designed as a stack of independent layers, each of which can in principle be swapped out for alternatives. This is deliberate: the project's ideas should be able to interoperate with other decentralized systems, not compete with them.
 
 ### Layer 1: Ratings
 
@@ -113,11 +113,11 @@ A rating record is a minimal structure:
 
 Ratings marked `public: false` are stored locally and influence the owner's graph traversal (they affect which external rating records are fetched and how they are weighted) but are never transmitted to other peers. This allows users to rate sensitive content — political, personal, adult — in a way that shapes their own view without disclosing what they have been looking at.
 
-The rating layer is **platform-agnostic**. Item identifiers can be anything: a URL, a content hash, a magnet link, a post ID on another platform. This means the nusenet trust graph can in principle be applied as a curation layer on top of existing platforms — a browser extension that applies nusenet ratings to content on other sites is a natural early application. Within the Bluesky ecosystem specifically, AT Protocol's "feed generator" feature allows third-party algorithms to rank and filter content; a nusenet trust graph exposed as a feed generator would let Bluesky users benefit from personal trust-graph curation without leaving the platform.
+The rating layer is **platform-agnostic**. Item identifiers can be anything: a URL, a content hash, a magnet link, a post ID on another platform. This means the neusnet trust graph can in principle be applied as a curation layer on top of existing platforms — a browser extension that applies neusnet ratings to content on other sites is a natural early application. Within the Bluesky ecosystem specifically, AT Protocol's "feed generator" feature allows third-party algorithms to rank and filter content; a neusnet trust graph exposed as a feed generator would let Bluesky users benefit from personal trust-graph curation without leaving the platform.
 
 ### Layer 2: Content Metadata
 
-The atomic unit of a nusenet post is a small **metadata file** with a standardized schema, containing at minimum:
+The atomic unit of a neusnet post is a small **metadata file** with a standardized schema, containing at minimum:
 
 - **Author**: identifier of the post's author
 - **Subject**: human-readable title
@@ -134,16 +134,16 @@ Users are identified by a stable, verifiable identifier that can be used to sign
 
 Other identity mechanisms are possible and may be preferable in some deployments. AT Protocol (Bluesky's underlying protocol) provides a decentralized identity layer based on DIDs (Decentralized Identifiers) that could serve the same function while also enabling tighter integration with the Bluesky ecosystem. Other DID-based systems, or even federated identity providers, could plug into the same slot. The core requirement is that an identifier be stable and verifiable. Decentralization is strongly preferred for the long-term philosophy of the system, but it is not a hard technical requirement: platform-issued identifiers (including OAuth/SSO providers like Google, Apple, or GitHub) could in principle serve as user IDs, which might ease integration with existing platforms during early adoption even if they introduce a degree of central dependency that a mature deployment would want to avoid.
 
-The primary adversarial threat to a trust-graph system is the **Sybil attack**: a bad actor generating many fake identities to flood the graph with coordinated ratings. Nusenet's natural defense is that fake accounts have no ratings power until real users develop positive affinity toward their posts — which requires actually producing content that real humans find valuable. Coordinated inauthentic behavior remains a risk but is bounded: a coordinated cluster cannot propagate its influence far into the broader graph without genuine cross-community endorsement, which the decay factor naturally limits.
+The primary adversarial threat to a trust-graph system is the **Sybil attack**: a bad actor generating many fake identities to flood the graph with coordinated ratings. neusnet's natural defense is that fake accounts have no ratings power until real users develop positive affinity toward their posts — which requires actually producing content that real humans find valuable. Coordinated inauthentic behavior remains a risk but is bounded: a coordinated cluster cannot propagate its influence far into the broader graph without genuine cross-community endorsement, which the decay factor naturally limits.
 
 ### Layer 4: Content Hosting and Distribution
 
 
 This layer is **deliberately hosting-agnostic**. The metadata file (Layer 2) contains a content reference field that can point to content hosted anywhere. Different posts on the same network may be hosted in entirely different ways, and the rating and discovery layers above don't care.
 
-#### IPFS (preferred for native nusenet content)
+#### IPFS (preferred for native neusnet content)
 
-**IPFS** is the preferred hosting backend for nusenet's own content. Its central feature is *content addressing*: every file is identified by a cryptographic hash of its contents (a CID, or Content Identifier), not by where it is stored. This means:
+**IPFS** is the preferred hosting backend for neusnet's own content. Its central feature is *content addressing*: every file is identified by a cryptographic hash of its contents (a CID, or Content Identifier), not by where it is stored. This means:
 
 - The same content always has the same identifier regardless of who is hosting it, solving canonicalization for cross-posts and reposts.
 - Content is tamper-evident by construction — any modification changes the CID.
@@ -152,7 +152,7 @@ This layer is **deliberately hosting-agnostic**. The metadata file (Layer 2) con
 
 Short text content (including the metadata file itself) can be stored directly as IPFS objects. Larger media — audio, video, high-resolution images — can also be stored on IPFS, which handles content of any size uniformly through its block-splitting architecture.
 
-Users who want to ensure their content remains available can **pin** it to a local IPFS node or to one of several public or paid pinning services, without any involvement from a nusenet-specific infrastructure provider.
+Users who want to ensure their content remains available can **pin** it to a local IPFS node or to one of several public or paid pinning services, without any involvement from a neusnet-specific infrastructure provider.
 
 #### BitTorrent (supplementary, or as a wholesale alternative)
 
@@ -162,27 +162,27 @@ For deployments that prefer not to use IPFS at all, BitTorrent can serve as a wh
 
 #### Conventional HTTP hosting
 
-Nothing prevents a nusenet metadata file from pointing to content on an ordinary web server. This is obviously less resilient than IPFS or BitTorrent (a single server can go down or be pressured to remove content), but it is fully functional and may be appropriate for some use cases — for instance, a publisher who controls their own server and wants to participate in the nusenet rating graph without migrating their content.
+Nothing prevents a neusnet metadata file from pointing to content on an ordinary web server. This is obviously less resilient than IPFS or BitTorrent (a single server can go down or be pressured to remove content), but it is fully functional and may be appropriate for some use cases — for instance, a publisher who controls their own server and wants to participate in the neusnet rating graph without migrating their content.
 
-#### Overlaying nusenet on existing social platforms
+#### Overlaying neusnet on existing social platforms
 
-The most important consequence of hosting-agnosticism is that nusenet does not require anyone to abandon their existing online presence to participate.
+The most important consequence of hosting-agnosticism is that neusnet does not require anyone to abandon their existing online presence to participate.
 
-Platforms like **Mastodon** (built on ActivityPub) and **Bluesky** (built on AT Protocol) expose open APIs designed for third-party clients. A nusenet client could read your feeds from these platforms, apply your personal trust graph as the ranking layer *instead of each platform's own algorithm*, and present a unified view across all of them. Multi-platform social clients already exist; what nusenet adds is a curation layer that is yours rather than the platform's.
+Platforms like **Mastodon** (built on ActivityPub) and **Bluesky** (built on AT Protocol) expose open APIs designed for third-party clients. A neusnet client could read your feeds from these platforms, apply your personal trust graph as the ranking layer *instead of each platform's own algorithm*, and present a unified view across all of them. Multi-platform social clients already exist; what neusnet adds is a curation layer that is yours rather than the platform's.
 
-Cross-posting works in the reverse direction: when you publish a native nusenet post, your client can simultaneously post to Mastodon, Bluesky, or other connected platforms, spreading your content to audiences who haven't yet adopted nusenet.
+Cross-posting works in the reverse direction: when you publish a native neusnet post, your client can simultaneously post to Mastodon, Bluesky, or other connected platforms, spreading your content to audiences who haven't yet adopted neusnet.
 
-Posts on traditional platforms lack nusenet's native author identity metadata. This can be bridged with a simple convention: include your nusenet public key in the body of a post on a traditional platform — something like `[nusenet:npub1abc123...]` — and nusenet clients can parse it. This is an established pattern; PGP signatures were distributed the same way before email clients natively supported them. A post with an embedded nusenet key becomes a node in the trust graph: it can be rated, those ratings contribute to the author's affinity scores, and the author's own published ratings apply to content they've rated. The nusenet graph grows quietly underneath existing platforms, requiring no migration.
+Posts on traditional platforms lack neusnet's native author identity metadata. This can be bridged with a simple convention: include your neusnet public key in the body of a post on a traditional platform — something like `[neusnet:npub1abc123...]` — and neusnet clients can parse it. This is an established pattern; PGP signatures were distributed the same way before email clients natively supported them. A post with an embedded neusnet key becomes a node in the trust graph: it can be rated, those ratings contribute to the author's affinity scores, and the author's own published ratings apply to content they've rated. The neusnet graph grows quietly underneath existing platforms, requiring no migration.
 
-This suggests a realistic adoption path: nusenet begins as a curation and identity layer grafted onto platforms people already use, demonstrating value before asking anyone to change their habits. Native nusenet hosting (via IPFS or BitTorrent) becomes appealing over time as the network effects of the trust graph make it worth participating more fully.
+This suggests a realistic adoption path: neusnet begins as a curation and identity layer grafted onto platforms people already use, demonstrating value before asking anyone to change their habits. Native neusnet hosting (via IPFS or BitTorrent) becomes appealing over time as the network effects of the trust graph make it worth participating more fully.
 
-**Rather than build every component from scratch, nusenet should seek to collaborate with and build on existing projects wherever possible.** Established multi-platform clients (Ivory, Mona, and others in the Mastodon ecosystem; clients being built on AT Protocol for Bluesky) are natural integration partners. IPFS and its tooling ecosystem are existing infrastructure, not something nusenet needs to reinvent. The novel contribution of this project is the trust graph protocol and the rating schema — the goal is to define those well and let them compose with whatever hosting and client infrastructure already exists.
+**Rather than build every component from scratch, neusnet should seek to collaborate with and build on existing projects wherever possible.** Established multi-platform clients (Ivory, Mona, and others in the Mastodon ecosystem; clients being built on AT Protocol for Bluesky) are natural integration partners. IPFS and its tooling ecosystem are existing infrastructure, not something neusnet needs to reinvent. The novel contribution of this project is the trust graph protocol and the rating schema — the goal is to define those well and let them compose with whatever hosting and client infrastructure already exists.
 
 ---
 
 ## Client Implementation Recommendations
 
-The following are not protocol requirements but represent good practice for nusenet client software.
+The following are not protocol requirements but represent good practice for neusnet client software.
 
 ### The Endorsed Content List
 
@@ -209,7 +209,7 @@ This lazy verification step also provides a natural integrity check. A proximal 
 
 
 
-- **Not a moderation system.** Nusenet does not remove or suppress content globally. Content that is invisible to you may be perfectly visible to someone else. The platform has no global moderators and no central content policy.
+- **Not a moderation system.** neusnet does not remove or suppress content globally. Content that is invisible to you may be perfectly visible to someone else. The platform has no global moderators and no central content policy.
 - **Not anonymous.** Posts and ratings are signed with keypairs. Pseudonymity is possible (your keypair need not be linked to your real identity), but the system does not provide anonymity guarantees. Users who need strong anonymity should route through appropriate tools independently.
 - **Not finished.** This document is a design proposal and invitation to collaborate, not a specification of a working system.
 
@@ -217,7 +217,7 @@ This lazy verification step also provides a natural integrity check. A proximal 
 
 ## Current Status and How to Get Involved
 
-Nusenet is currently in the **design and specification phase**. No production code exists yet.
+neusnet is currently in the **design and specification phase**. No production code exists yet.
 
 The immediate priorities are:
 
