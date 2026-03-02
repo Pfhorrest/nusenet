@@ -99,6 +99,21 @@ When a user publishes a post, the client should automatically issue a synthetic 
 
 Self-ratings are fully overridable. An author who wishes to disavow a previous post can retract or replace the self-rating with a lower value, and the post will be treated accordingly by the scoring algorithm with no special cases. No implicit algorithmic rule grants posts a baseline score; the self-rating record is the entire mechanism.
 
+### 2.5 Rating Aggregation Across Versions
+
+Because rating records reference version identifiers rather than stable post identifiers (see metadata.md §2), computing an aggregate score for a post requires collecting ratings across all relevant versions. The procedure is:
+
+1. Build the canonical version history for the post's stable `id` (see metadata.md §5.2).
+2. Collect all rating records whose `item` field matches any version identifier in the canonical history, plus any memory-holed versions (whose ratings count against the author per metadata.md §5.2).
+3. Collect ratings from any third-party introductions of the same content, where content identity is confirmed via matching immutable content URIs or hash fields (see metadata.md §6.2). These are included in the aggregate.
+4. Exclude ratings whose `item` field matches a false claimant version (different author signed as themselves).
+5. **Deduplicate by rater**: for each rater, retain only their most recent rating record across all collected versions (by timestamp). This prevents score inflation from a rater re-rating multiple versions of the same post, and prevents authors from self-boosting by publishing many near-identical versions each carrying a self-rating of +1.
+6. Apply the trust graph algorithm (Sections 4–5) to the deduplicated rating set.
+
+The default feed view shows the current version with the aggregate score. Clients should additionally:
+- Provide per-version score breakdowns in the version history view.
+- Visually flag posts where ratings are substantially concentrated on a version other than the current one, as this may indicate content was materially changed after attracting significant attention.
+
 ---
 
 ## 3. Derivative Ratings: Posts as Mediators

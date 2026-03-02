@@ -211,16 +211,7 @@ Clients must:
 
 ### 5.3 Aggregating Scores Across Versions
 
-Ratings reference version identifiers, not stable identifiers. To compute the aggregate score for a post:
-
-1. Build the canonical version history (Section 5.2).
-2. Collect all rating records whose `item` field matches any version identifier in that history, plus any memory-holed versions (whose ratings count per Section 5.2).
-3. Deduplicate by rater: for each rater, use only their most recent rating across all versions (by timestamp). This prevents score inflation from a rater re-rating multiple versions of the same post, and prevents authors from self-boosting by publishing many near-identical versions each attracting a self-rating.
-4. Apply the trust graph algorithm (ratings.md §4–5) to the deduplicated rating set.
-
-The default view shows the current version with the aggregate score. Clients should additionally:
-- Provide access to per-version score breakdowns in the version history view.
-- Visually flag posts where ratings are substantially concentrated on a version other than the current one, as this may indicate content was changed after attracting significant attention.
+The rules for aggregating ratings across versions of a post — including deduplication by rater, treatment of memory-holed versions, and inclusion of third-party introduction ratings — are specified in ratings.md §2.5, which is the authoritative location for all rating computation logic.
 
 ### 5.4 Disavowal
 
@@ -246,13 +237,13 @@ Clients must display trust level visibly and consistently. Author-verified posts
 
 A third-party introduction is a metadata file where the `author` field names the true author of the content but the `signature` is from a different party (the introducer). This is a legitimate and expected pattern — it is how external content (Bluesky posts, web articles, etc.) enters the neusnet graph before or instead of the original author posting it themselves.
 
-Third-party introductions are not part of any post's canonical version history (Section 5.2), since they are not signed by the canonical author. However, their ratings may be aggregated with the canonical post's aggregate score when **content identity is confirmed**: if both the introduction and a canonical version reference the same content via matching immutable URIs (identical IPFS CIDs or equivalent content-addressed identifiers), the content is demonstrably identical and ratings given to the introduction reasonably reflect community sentiment about that content.
+Third-party introductions are not part of any post's canonical version history (Section 5.2), since they are not signed by the canonical author. Their ratings may nonetheless be included in the aggregate score for a post when content identity is confirmed via matching immutable URIs or hash fields across the introduction and a canonical version — the full aggregation rules are specified in ratings.md §2.5.
 
 This content-matching aggregation applies only to third-party introductions where the `author` field names the canonical author. It does not apply to false claimants (where a different author is named and signed), even if their content happens to match.
 
 When the original author later publishes their own author-verified post for the same `id`, clients should:
 - Promote that post to canonical status.
-- Offer to aggregate ratings from any prior third-party introductions of the same content, subject to content identity confirmation.
+- Aggregate ratings from any prior third-party introductions of the same content, per ratings.md §2.5.
 - Display clearly which ratings came from the introduction period and which from after author verification.
 
 ### 6.3 Bridged Posts
