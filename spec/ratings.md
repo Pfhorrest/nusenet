@@ -57,6 +57,8 @@ A rating record is a signed data structure with the following fields:
 
 ```json
 {
+  "neusnet_version": 1,
+  "type":       "rating",
   "rater":      "<user-identifier>",
   "item":       "<item-identifier>",
   "item_type":  "<post | user | tag>",
@@ -66,6 +68,10 @@ A rating record is a signed data structure with the following fields:
   "signature":  "<cryptographic signature over all other fields>"
 }
 ```
+
+**`neusnet_version`** — integer. Must be `1` for records conforming to this specification. Allows future versions to be distinguished.
+
+**`type`** — string. Must be `"rating"`. Distinguishes rating records from other neusnet JSON objects.
 
 **`rater`** — the user identifier of the person issuing this rating.
 
@@ -301,8 +307,9 @@ A rating record collection is a JSON object:
 
 ```json
 {
-  "version": 1,
-  "owner": "<user-identifier>",
+  "neusnet_version": 1,
+  "type":    "rating_collection",
+  "owner":   "<user-identifier>",
   "generated": <unix timestamp>,
   "records": [ <rating-record>, ... ],
   "cached": [ <rating-record>, ... ]

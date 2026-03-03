@@ -56,6 +56,7 @@ A metadata file is a JSON object. Fields marked **required** must be present in 
 ```json
 {
   "neusnet_version": 1,
+  "type":           "post",
   "id":             "<stable identifier>",
   "author":         "<user identifier>",
   "subject":        "<string>",
@@ -72,6 +73,8 @@ A metadata file is a JSON object. Fields marked **required** must be present in 
 ### Required Fields
 
 **`neusnet_version`** — integer. The version of the neusnet metadata format this file conforms to. Must be `1` for files conforming to this specification. Clients encountering an unrecognized version number should treat the file as opaque and not attempt to interpret it.
+
+**`type`** — string. Must be `"post"`. Distinguishes post metadata files from identity documents and other neusnet JSON objects.
 
 **`id`** — string. The stable identifier for this post (see Section 2). Must be present in every version of the post and must not change between versions.
 
