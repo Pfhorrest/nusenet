@@ -2,7 +2,7 @@
 
 *Working draft — design phase*
 
-This document specifies the neusnet identity model: how users are identified, how their signatures are verified, and how identity persists, rotates, and optionally presents itself to other users. It is a companion to [README.md](README.md) (overview and motivation), [ratings.md](ratings.md) (Layer 1: Rating Protocol), [metadata.md](metadata.md) (Layer 2: Content Metadata), and [hosting.md](hosting.md) (Layer 4: Content Hosting and Distribution).
+This document specifies the neusnet identity model: how users are identified, how their signatures are verified, and how identity persists, rotates, and optionally presents itself to other users. It is a companion to [README.md](../README.md) (overview and motivation), [ratings.md](ratings.md) (Layer 1: Rating Protocol), [metadata.md](metadata.md) (Layer 2: Content Metadata), and [hosting.md](hosting.md) (Layer 4: Content Hosting and Distribution).
 
 ---
 
