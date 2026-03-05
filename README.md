@@ -196,7 +196,7 @@ Each channel is a personalized, trust-graph-filtered view of all posts under tho
 
 The recurring schism dynamic of community platforms — where a faction unhappy with administration policy leaves to found a rival space — looks different through this lens. In a room-based platform, leaving is costly: you lose access to shared history, your posts are left behind, the community fractures along an ownership boundary. In neusnet, there is no ownership boundary to fracture along.
 
-A group of users who want a more focused version of a community can coalesce around a sub-tag without anyone being expelled from anything. Their `#philosophy-basement` posts remain visible in `#philosophy` searches for anyone whose trust graph surfaces them. The broader community loses nothing; the sub-community gains a coherent identity. Both can exist simultaneously without conflict, and the relationship between them is determined by individual trust graph choices rather than administrative fiat.
+A group of users who want a more focused version of a community can coalesce around a subtag like `#philosophy.basement` or a flat tag like `#philosophy-basement` without anyone being expelled from anything. Users in the broader community who want to follow the splinter group can add that tag to their `#philosophy` channel's local taxonomy; those who don't, won't see it. The broader community loses nothing; the sub-community gains a coherent identity. Both can exist simultaneously without conflict, and the relationship between them is determined by individual trust graph choices and channel configurations rather than administrative fiat.
 
 ### Presence and Buddy Lists
 
