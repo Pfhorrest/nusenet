@@ -251,6 +251,22 @@ Your client then operates in two modes simultaneously:
 
 This lazy verification step also provides a natural integrity check. A proximal peer cannot silently manipulate what you see from people further out without the manipulation being detectable as soon as your client makes direct contact with those further peers and finds a discrepancy. Since all rating records are cryptographically signed by their original authors, any tampering is immediately evident. And any peer caught serving falsified or selectively withheld cached ratings loses affinity with you as a consequence — reducing their influence over your view going forward. The incentive structure discourages manipulation without requiring a separate enforcement mechanism.
 
+### Rating Dimension UI
+
+The four core rating dimensions — True, Good, Important, and New — can be difficult to convey through labels alone. Clients are encouraged to represent them with icons that communicate their intended meaning at a glance, supplemented by brief tooltip descriptions for new users.
+
+The four dimensions fall naturally into two pairs along two axes, which the visual design can reflect:
+
+**Content axes** — dimensions that evaluate the content's relationship to reality and ethics:
+- **True** (factual accuracy): a checkmark for positive, an ✗ for negative. These symbols are effectively universal for correct/incorrect.
+- **Good** (ethical and aesthetic quality): a smiling face for positive, a frowning face for negative.
+
+**Conversation axes** — dimensions that evaluate the content's relationship to the ongoing discourse:
+- **Important** (significance, worth attention): an exclamation mark for positive, an ellipsis for negative. The ellipsis naturally conveys "so what?" or "going nowhere" — a visually apt rendering of unimportance.
+- **New** (originality, not a rehash): this is the hardest dimension to iconify, since "new" means *novel and original* rather than *recently published*. Possible approaches include a shine or sparkle versus dust or trash, a lightbulb (original thought) versus a recycling symbol (rehash), or an excited face versus a yawn. No obvious universal symbol exists here; clients should experiment and tooltips are especially important for this dimension.
+
+Grouping the two content axes together and the two conversation axes together in the UI — whether by proximity, colour, or a subtle divider — can help users build an intuition for what each dimension is actually measuring and why the four are independent of one another.
+
 
 
 ## What This Is Not
